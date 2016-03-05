@@ -28,6 +28,8 @@ public class Robot extends IterativeRobot {
 	MXPData mxp;
 	int autoLoopCounter;
 	AHRS ahrs;
+	AdvertiseIP aip;
+	TCGet tcget;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -42,7 +44,6 @@ public class Robot extends IterativeRobot {
             DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
         }
     	stick = new Joystick(0); 
-    	SmartDashboard.putString("Dal", "SuperDuper");
     	//ThreadDemo td = new ThreadDemo();
     	//td.start();
     	TargetComputer tc = new TargetComputer();
@@ -50,6 +51,10 @@ public class Robot extends IterativeRobot {
     	servo1 = new Servo(2);
     	pot = new AnalogInput(0);
     	mxp = new MXPData();
+    	tcget = new TCGet();
+    	tcget.start();
+    	//aip = new AdvertiseIP();
+    	//aip.run();  // At this point, IP is being advertised on separate thread.
     }
     
     /**
@@ -93,7 +98,7 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putDouble("Analog Pot", voltage);
     	servo1.set(voltage/4096.0);
     	//servo1.set(x);
-    	
+    	//tccom.SendData();
     }
     
     /**

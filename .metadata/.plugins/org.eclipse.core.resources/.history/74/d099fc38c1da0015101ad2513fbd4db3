@@ -1,0 +1,69 @@
+package org.usfirst.frc.team4415.robot;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import java.io.SocketConnection;
+
+// This class assumes the setup as follows..
+
+// This class communicates with the PI computer to get
+// Targeting Info.
+
+public class TCCom {
+	String m_PiNetName = "pi-4415-tc-1";
+	int m_Port = 5800;
+	DatagramSocket m_socket = null;
+	//Socket m_socket = null;
+	
+	public void SendData() {
+		//OutputStream w = null;
+		SmartDashboard.putString("JavaNetStatus", "I got to here");
+		try {
+			SmartDashboard.putString("JavaNetStatus", "I got to here #2");
+			//m_socket = new Socket("192.168.0.104", m_Port);
+			m_socket = new DatagramSocket();
+			m_socket.connect(InetAddress.getByName("192.168.0.104"), m_Port);
+			DatagramPacket p = new DatagramPacket("Hello".getBytes(), 5);
+			m_socket.send(p);
+			
+		}
+		catch (UnknownHostException e) {
+			SmartDashboard.putString("JavaNetStatus", "Failed on getting socket #1.");
+			SmartDashboard.putString("JavaNetError", e.getMessage());
+			
+			return;
+		} catch (IOException e) {
+			SmartDashboard.putString("JavaNetStatus", "Failed on getting socket #2.");
+			SmartDashboard.putString("JavaNetError", e.getMessage());
+			return;
+		}
+		//try {
+		//	w = m_socket.getOutputStream();
+		//} catch (IOException e) {
+		//	SmartDashboard.putString("JavaNetStatus", "Failed on output stream.");
+		//	SmartDashboard.putString("JavaNetError", e.getMessage());
+		//	return;
+		//}
+		//try {
+		//	w.write("Hello Nathan".getBytes());
+		//} catch (IOException e) {
+		//	SmartDashboard.putString("JavaNetStatus", "Failed on write.");
+		//	SmartDashboard.putString("JavaNetError", e.getMessage());
+		//	return;
+		//}
+		//try {
+		//	w.close();
+		//}/ catch (IOException e) {
+		//	SmartDashboard.putString("JavaNetStatus", "Failed on close.");
+		//	SmartDashboard.putString("JavaNetError", e.getMessage());
+		//	return;
+		//}
+		SmartDashboard.putString("JavaNetStatus", "Write Success.");
+	}
+}

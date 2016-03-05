@@ -1,0 +1,76 @@
+package org.usfirst.frc.team4415.robot;
+
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Formatter;
+import java.util.Locale;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+public class TCRecieve extends Thread {
+	DatagramSocket m_socket = null;
+	byte[] m_receiveData = new byte[1024];
+	int m_Port = 5802;                   // Port that Pi will send us stuff.
+	int m_nTry  = 0;
+	int m_nFail = 0;
+	int m_nGot = 0;
+	
+	@Override
+	public void run() 
+	{
+		SmartDashboard.putString("TCReceive",   "");
+		SmartDashboard.putString("TCReceive_1", "");
+		SmartDashboard.putString("TCReceive_2", "");
+
+		while(true)
+		{
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				SmartDashboard.putString("TCReceive", "Fatal Error on Sleep!");
+				return;
+			}
+			Receive();
+			if(m_nTry % 10 == 0) {
+				StringBuilder sb = new StringBuilder();
+				Formatter f = new Formatter(sb, Locale.US);
+				f.format("IP Advertisements Sent/Failed: %d, %d.", m_nSent, m_nFail);
+				SmartDashboard.putString("TCReceive",  sb.toString());
+				f.close();
+			}
+			m_nTry++;
+		}
+	}
+	
+	// Each time Receive is called, a new UDP packet is received.
+	// We count success and failures.
+	public void Receive() {
+		try {
+			if(m_socket == null) m_socket = new DatagramSocket(m_Port);
+			DatagramPacket receivePacket = new DatagramPacket(m_receiveData, m_receiveData.length);
+            m_socket.receive(receivePacket); 
+            String sentence = new String(m_receivePacket.getData());
+			m_socket.connect(InetAddress.getByName(m_PiNetName), m_Port);
+			String s = m_OurName + ":" + m_OurPI + " " + m_nTry;
+			DatagramPacket p = new DatagramPacket(s.getBytes(), s.length());
+			m_socket.send(p);
+		}
+		catch (UnknownHostException e) {
+			m_nFail++;
+			SmartDashboard.putString("TCReceive_1", "Failed on getting socket #1.");
+			SmartDashboard.putString("TCReceive_2", e.getMessage());
+			return;
+		} catch (IOException e) {
+			m_nFail++;
+			SmartDashboard.putString("TCReceiv_1", "Failed on getting socket #2.");
+			SmartDashboard.putString("TCReceiv_2", e.getMessage());
+			return;
+		}
+		m_nSent++;
+		return;
+	}
+
+}
